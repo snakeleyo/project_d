@@ -1,0 +1,48 @@
+.photo-list{
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+.photo-list>li {
+    width: 30%;
+    float: left;
+    margin: 10px;
+    border: 1px solid #CCCCCC;
+    text-align: center;
+}
+.photo-list>li>.upload.photo{
+  width: 100%;
+  height: 200px;
+  background-color: #ECECEC;
+  text-align: center;
+  cursor: pointer;
+}
+.photo-list>li>.upload.photo:hover{
+  background-color: #ECECCC;
+}
+.photo-list>li>.upload.photo>.fa-camera{
+    font-size: 84px;
+    padding-top: 55px;
+    color: #CCCCCC;
+}
+.photo-list>li>.photo-bar{
+  border-top: 1px solid #CCCCCC;
+}
+.photo-list>li>.photo-bar a{
+    margin: 2px;
+    padding: 8px 15px;
+    color: #000;
+}
+.photo-list>li>.photo-bar a:hover{
+    background-color: #ECECEC;
+}
+.photo-list>li>.photo-bar .fa{
+  color: #f79a4a;
+  font-size: 12pt;
+}
+
+@media screen and (max-width: 767px){
+  .photo-list>li {
+    width: 95%;
+  }
+}
