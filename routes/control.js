@@ -4,23 +4,46 @@ module.exports = function(router) {
     });
 
     router.get('/showlist/getdata' , function(req, res){
-        var fs = require('fs');
-        var file = "./data/goods.json";
-        var goods = JSON.parse(fs.readFileSync(file));
-
+        var goods = getdata();
         res.send(goods);
     });
 
     router.get('/top' , function(req, res){
-        res.render('top');
+        res.render('admin_top');
     });
 
     router.get('/top/getdata' , function(req, res){
-        var fs = require('fs');
-        var file = "./data/goods.json";
-        var goods = JSON.parse(fs.readFileSync(file));
-
+        var goods = getdata();
         res.send(goods);
+    });
+
+    router.get('/edit' , function(req, res){
+        res.render('admin_edit');
+    });
+
+    router.get('/edit/getdata' , function(req, res){
+        var goods = getdata();
+        res.send(goods);
+    });
+
+    router.post('/edit/savedata' , function(req, res){
+        console.log("stand by");
+        var store = JSON.stringify(req.body);
+        console.log(store);
+
+        var fs = require("fs");
+        var file = "./data/goods.json";
+
+        fs.writeFile(file, store,  function(err) {
+            if (err) {
+                console.log("something wrond...");
+                console.error(err);
+                res.send(false);
+            }
+         });
+
+         console.log("write in over");
+         res.send(true);
     });
 
     router.post('/login', function(req, res) {
@@ -43,8 +66,10 @@ module.exports = function(router) {
         }
     });
 
-    function test() {
-        return "test...1";
-        
+    function getdata() {
+        var fs = require('fs');
+        var file = "./data/goods.json";
+        var goods = JSON.parse(fs.readFileSync(file));
+        return goods;
     }
 };

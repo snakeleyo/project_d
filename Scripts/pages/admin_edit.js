@@ -18,9 +18,39 @@ $(function () {
       this.expander.removeClass("fa-caret-down").addClass("fa-caret-right");
     }
   });
-	$("#top-tree-02").treetable("expandAll");
 
-	pageInit();
+  $("#top-tree-02").treetable("expandAll");
+
+  $("#btn_save").click(function() {
+	var goods = [];
+    $("#top-tree-table tbody tr").each(function(idx, ele) {
+		var data_row = {};
+		data_row["ID"] = "";
+
+		$(this).find("td").each(function() {
+			var obj = $(this).find("input");
+			var id = $(obj).attr("data-id");
+			var value = $(obj).val();
+			data_row[$(obj).attr("data-id")] = value;
+		});
+		goods.push(data_row);
+	});
+
+	var data = {"GOODS" : goods};
+
+	$.ajax({
+		url: '/edit/savedata',
+		type: 'post',
+		dataType: 'json',
+		contentType: "application/json; charset=UTF-8",
+		data : JSON.stringify(data),
+		success: function(goods) {
+			alert("保存完毕，恭喜发财");
+		}
+	})
+  });
+
+  pageInit();
 });
 
 function nodeExpand(){
@@ -102,8 +132,7 @@ function nodeExpand(){
 			var trHtml = "";
 
 			$.ajax({
-				//url: '/top/getdata',
-				url: './data/goods.json',
+				url: '/edit/getdata',
 				type: 'get',
 				dataType: 'json',
 				cache: false,
@@ -114,15 +143,21 @@ function nodeExpand(){
 						trHtml = "";
 						trHtml += "<tr>";
 						//trHtml += "<td>" + ele.ID + "</td>";
-						trHtml += "<td>" + ele.name + "</td>";
-						trHtml += "<td>" + ele.buy_price + "</td>";
-						trHtml += "<td>" + ele.sell_price + "</td>";
-						trHtml += "<td>" + ele.profits + "</td>";
-						trHtml += "<td>" + ele.leavings + "</td>";
+						trHtml += "<td>" + getInputHtml("name", ele.name) + "</td>";
+						trHtml += "<td>" + getInputHtml("buy_price", ele.buy_price) + "</td>";
+						trHtml += "<td>" + getInputHtml("sell_price", ele.sell_price) + "</td>";
+						trHtml += "<td>" + getInputHtml("profits", ele.profits) + "</td>";
+						trHtml += "<td>" + getInputHtml("leavings", ele.leavings) + "</td>";
 						trHtml += "</tr>";
 
 						$(trHtml).appendTo("#top-tree-table tbody");
 					});
 				}
 			})
+		}
+
+		function getInputHtml(id, value) {
+			var inputHtml = "";
+			inputHtml += "<input type='text' data-id='" + id + "' value='" + value + "'/>";
+			return inputHtml;
 		}
