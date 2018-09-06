@@ -102,7 +102,8 @@ function nodeExpand(){
 			var trHtml = "";
 
 			$.ajax({
-				url: '/top/getdata',
+				//url: '/top/getdata',
+				url: './data/goods.json',
 				type: 'get',
 				dataType: 'json',
 				cache: false,
@@ -110,16 +111,13 @@ function nodeExpand(){
 				contentType: false,
 				success: function(goods) {
 					$(goods.GOODS).each(function(idx, ele) {
-						trHtml = "";			
+						trHtml = "";
 						trHtml += "<tr>";
 						//trHtml += "<td>" + ele.ID + "</td>";
 						trHtml += "<td>" + ele.name + "</td>";
-						trHtml += "<td>" + ele.buy_price + "</td>";
-						trHtml += "<td>" + ele.sell_price + "</td>";
-						trHtml += "<td>" + ele.profits + "</td>";
 						trHtml += "<td>" + ele.leavings + "</td>";
 						trHtml += "</tr>";
-		
+
 						$(trHtml).appendTo("#top-tree-table tbody");
 					});
 				}
