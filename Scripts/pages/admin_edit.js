@@ -22,32 +22,25 @@ $(function () {
   $("#top-tree-02").treetable("expandAll");
 
   $("#btn_save").click(function() {
-	var goods = [];
-    $("#top-tree-table tbody tr").each(function(idx, ele) {
-		var data_row = {};
-		data_row["ID"] = "";
+	savedata();
+  });
 
-		$(this).find("td").each(function() {
-			var obj = $(this).find("input");
-			var id = $(obj).attr("data-id");
-			var value = $(obj).val();
-			data_row[$(obj).attr("data-id")] = value;
-		});
-		goods.push(data_row);
-	});
+  $("#btn_add").click(function() {
 
-	var data = {"GOODS" : goods};
+	var trHtml = "";
+	trHtml = "";
+	trHtml += "<tr>";
+	trHtml += "<td>" + getDelBtnHtml() + "</td>";
+	trHtml += "<td></td>";
+	trHtml += "<td>" + getInputHtml("name", "") + "</td>";
+	trHtml += "<td>" + "" + "</td>";
+	trHtml += "<td>" + getInputHtml("buy_price", "") + "</td>";
+	trHtml += "<td>" + getInputHtml("sell_price", "") + "</td>";
+	trHtml += "<td>" + getInputHtml("profits", "") + "</td>";
+	trHtml += "<td>" + getInputHtml("leavings", "") + "</td>";
+	trHtml += "</tr>";
 
-	$.ajax({
-		url: '/edit/savedata',
-		type: 'post',
-		dataType: 'json',
-		contentType: "application/json; charset=UTF-8",
-		data : JSON.stringify(data),
-		success: function(goods) {
-			alert("保存完毕，恭喜发财");
-		}
-	})
+	$(trHtml).appendTo("#top-tree-table tbody");
   });
 
   pageInit();
@@ -138,12 +131,17 @@ function nodeExpand(){
 				cache: false,
 				processData: false,
 				contentType: false,
-				success: function(goods) {
+				success: function(result) {
+					var goods = result.goods;
+					var groups = result.groups;
+
 					$(goods.GOODS).each(function(idx, ele) {
 						trHtml = "";
 						trHtml += "<tr>";
-						//trHtml += "<td>" + ele.ID + "</td>";
+						trHtml += "<td>" + getDelBtnHtml() + "</td>";
+						trHtml += "<td>" + ele.ID + "</td>";
 						trHtml += "<td>" + getInputHtml("name", ele.name) + "</td>";
+						trHtml += "<td>" + getSelectHtml(groups.GROUP, "") + "</td>"; //ele.groups
 						trHtml += "<td>" + getInputHtml("buy_price", ele.buy_price) + "</td>";
 						trHtml += "<td>" + getInputHtml("sell_price", ele.sell_price) + "</td>";
 						trHtml += "<td>" + getInputHtml("profits", ele.profits) + "</td>";
@@ -158,6 +156,67 @@ function nodeExpand(){
 
 		function getInputHtml(id, value) {
 			var inputHtml = "";
-			inputHtml += "<input type='text' data-id='" + id + "' value='" + value + "'/>";
+			inputHtml += "<input type='text' data-id='" + id + "' value='" + value + "' class='form-control pull-right edit'/>";
 			return inputHtml;
+		}
+
+		function getDelBtnHtml() {
+			var buttonHtml = '<button type="button" class="btn btn-info btn-danger btn-item-remove" onclick="deleteGoods(this);"><i class="fa fa-times"></i></button>';
+			return buttonHtml;
+		}
+
+		function getSelectHtml(json_option, selVal) {
+			var selectHtml = '';
+			selectHtml += '<div class="col-sm-5 col-sm-item" style="width:100%;">'
+			selectHtml += '<select class="form-control" style="width:100%;">';
+			selectHtml += '<option value=""></option>';
+
+			$(json_option).each(function(idx, ele) {
+				var selected = selVal == ele.code ?  "selected" : "";
+				selectHtml += '<option value="' + ele.code + '" ' + selected + '>' + ele.name + '</option>';
+			});
+			selectHtml += '</select>';
+			selectHtml += '</div>';
+
+			return selectHtml;
+		}
+
+		function deleteGoods(obj) {
+			//alert("删掉后，点击保存才可生效");
+			$(obj).parents("tr").hide(300, function() {
+				$(obj).parents("tr").remove();
+			});
+		}
+
+		function savedata() {
+			$("#top-tree-table").find("tr").filter(function() {
+				return $(this).find("[data-id='name']").val() == "";
+			}).remove();
+
+			var goods = [];
+			$("#top-tree-table tbody tr").each(function(idx, ele) {
+				var data_row = {};
+				data_row["ID"] = "";
+		
+				$(this).find("td").each(function() {
+					var obj = $(this).find("input");
+					var id = $(obj).attr("data-id");
+					var value = $(obj).val();
+					data_row[$(obj).attr("data-id")] = value;
+				});
+				goods.push(data_row);
+			});
+		
+			var data = {"GOODS" : goods};
+		
+			$.ajax({
+				url: '/edit/savedata',
+				type: 'post',
+				dataType: 'json',
+				contentType: "application/json; charset=UTF-8",
+				data : JSON.stringify(data),
+				success: function(goods) {
+					alert("保存完毕，恭喜发财");
+				}
+			})
 		}

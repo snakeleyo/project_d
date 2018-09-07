@@ -115,6 +115,7 @@ function nodeExpand(){
 						trHtml += "<tr>";
 						//trHtml += "<td>" + ele.ID + "</td>";
 						trHtml += "<td>" + ele.name + "</td>";
+						// trHtml += "<td></td>";
 						trHtml += "<td>" + ele.buy_price + "</td>";
 						trHtml += "<td>" + ele.sell_price + "</td>";
 						trHtml += "<td>" + ele.profits + "</td>";

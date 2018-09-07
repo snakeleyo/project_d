@@ -27,7 +27,6 @@ app.use(express.static(path.join(__dirname, 'data')));
 app.use(express.static(path.join(__dirname, 'views')));
 
 app.use(express.static(path.join(__dirname, '/')));
-app.use(express.static(path.join(__dirname, '/')));
 
 app.use(session({
     secret : 'secret',

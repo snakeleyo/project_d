@@ -23,7 +23,9 @@ module.exports = function(router) {
 
     router.get('/edit/getdata' , function(req, res){
         var goods = getdata();
-        res.send(goods);
+        var groups = getGroupInfo();
+        var result = {"goods" : goods, "groups" : groups}
+        res.send(result);
     });
 
     router.post('/edit/savedata' , function(req, res){
@@ -71,5 +73,12 @@ module.exports = function(router) {
         var file = "./data/goods.json";
         var goods = JSON.parse(fs.readFileSync(file));
         return goods;
+    }
+
+    function getGroupInfo() {
+        var fs = require('fs');
+        var file = "./data/group.json";
+        var groups = JSON.parse(fs.readFileSync(file));
+        return groups;
     }
 };

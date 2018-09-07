@@ -19,7 +19,7 @@
        folder instead of downloading all of them to reduce the load. -->
   <link rel="stylesheet" href="/Content/skins/_all-skins.min.css">
   <link rel="stylesheet" href="/Content/site.css">
-  <link rel="stylesheet" href="/Content/page/top.css">
+  <link rel="stylesheet" href="/Content/page/admin_edit.css">
 </head>
 <body class="hold-transition skin-red-light sidebar-mini">
 <div class="wrapper">
@@ -167,8 +167,10 @@
                 <table id="top-tree-table" class="table table-bordered top-tree-table">
                   <thead>
                     <tr>
-                      <!--<th>商品ID</th>-->
+                      <th>删除</th>
+                      <th>商品ID</th>
                       <th>商品名称</th>
+                      <th>商品分类</th>
                       <th>参考进价</th>
                       <th>参考卖价</th>
                       <th>参考利润</th>
@@ -181,6 +183,20 @@
               </div>
             </div>
           </div>
+
+          <div class="box-body">
+            <div class="button-bars">
+              <div class="left-bar">
+                <span style="">
+                  <button class="btn btn-info btn-lg" type="button" id="btn_add">
+                    <span class="fa fa fa-plus" aria-hidden="true"></span>
+                    <span class="button_text">添加新品</span>
+                  </button>
+                </span>
+              </div>
+            </div>
+          </div>
+
           <div class="chart tab-pane" id="tab02">
             <div class="box-body">
               <div class="table-responsive">
