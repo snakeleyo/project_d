@@ -14,7 +14,9 @@ module.exports = function(router) {
 
     router.get('/top/getdata' , function(req, res){
         var goods = getdata();
-        res.send(goods);
+        var groups = getGroupInfo();
+        var result = {"goods" : goods, "groups" : groups}
+        res.send(result);
     });
 
     router.get('/edit' , function(req, res){

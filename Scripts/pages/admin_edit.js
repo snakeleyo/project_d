@@ -33,11 +33,14 @@ $(function () {
 	trHtml += "<td>" + getDelBtnHtml() + "</td>";
 	trHtml += "<td></td>";
 	trHtml += "<td>" + getInputHtml("name", "") + "</td>";
-	trHtml += "<td>" + "" + "</td>";
-	trHtml += "<td>" + getInputHtml("buy_price", "") + "</td>";
-	trHtml += "<td>" + getInputHtml("sell_price", "") + "</td>";
-	trHtml += "<td>" + getInputHtml("profits", "") + "</td>";
-	trHtml += "<td>" + getInputHtml("leavings", "") + "</td>";
+	trHtml += "<td>" + getSelectHtml("group", "", json_option) + "</td>"; //ele.groups
+	trHtml += "<td>" + getInputHtml("buy_price", "", "onchange='reCalculate(this)'") + "</td>";
+	trHtml += "<td>" + getInputHtml("sell_price", "", "onchange='reCalculate(this)'") + "</td>";
+	trHtml += "<td>" + getInputHtml("leavings", "", "") + "</td>";
+	trHtml += "<td>" + getInputHtml("weight", "", "style:width:75px;min-width:75px; onchange='reCalculate(this);'") + "</td>";
+	trHtml += "<td style='padding-top:15px;'>0<span data-id='tran_price'></span></td>";
+	trHtml += "<td style='padding-top:15px;'>0(0)<span data-id='cost_price'></td>";
+	trHtml += "<td style='padding-top:15px;'>0<span data-id='profits'></td>";
 	trHtml += "</tr>";
 
 	$(trHtml).appendTo("#top-tree-table tbody");
@@ -45,6 +48,9 @@ $(function () {
 
   pageInit();
 });
+
+var TRAN_CONS = 6.2;
+var json_option;
 
 function nodeExpand(){
 			this.expander.removeClass("fa-caret-right").addClass("fa-caret-down");
@@ -133,7 +139,7 @@ function nodeExpand(){
 				contentType: false,
 				success: function(result) {
 					var goods = result.goods;
-					var groups = result.groups;
+					json_option = result.groups.GROUP;
 
 					$(goods.GOODS).each(function(idx, ele) {
 						trHtml = "";
@@ -141,11 +147,14 @@ function nodeExpand(){
 						trHtml += "<td>" + getDelBtnHtml() + "</td>";
 						trHtml += "<td>" + ele.ID + "</td>";
 						trHtml += "<td>" + getInputHtml("name", ele.name) + "</td>";
-						trHtml += "<td>" + getSelectHtml(groups.GROUP, "") + "</td>"; //ele.groups
-						trHtml += "<td>" + getInputHtml("buy_price", ele.buy_price) + "</td>";
-						trHtml += "<td>" + getInputHtml("sell_price", ele.sell_price) + "</td>";
-						trHtml += "<td>" + getInputHtml("profits", ele.profits) + "</td>";
+						trHtml += "<td>" + getSelectHtml("group", ele.group, json_option) + "</td>"; //ele.group
+						trHtml += "<td>" + getInputHtml("buy_price", ele.buy_price, "onchange='reCalculate(this)'") + "</td>";
+						trHtml += "<td>" + getInputHtml("sell_price", ele.sell_price, "onchange='reCalculate(this)'") + "</td>";
 						trHtml += "<td>" + getInputHtml("leavings", ele.leavings) + "</td>";
+						trHtml += "<td>" + getInputHtml("weight", ele.weight, "style:width:75px;min-width:75px; onchange='reCalculate(this);'") + "</td>";
+						trHtml += "<td style='padding-top:15px;'><span data-id='tran_price'>" + ele.tran_price + "</span></td>";
+						trHtml += "<td style='padding-top:15px;'><span data-id='cost_price'>" + ele.cost_price + "</span></td>";
+						trHtml += "<td style='padding-top:15px;'><span data-id='profits'>" + ele.profits + "</span></td>";
 						trHtml += "</tr>";
 
 						$(trHtml).appendTo("#top-tree-table tbody");
@@ -154,9 +163,9 @@ function nodeExpand(){
 			})
 		}
 
-		function getInputHtml(id, value) {
+		function getInputHtml(id, value, others) {
 			var inputHtml = "";
-			inputHtml += "<input type='text' data-id='" + id + "' value='" + value + "' class='form-control pull-right edit'/>";
+			inputHtml += "<input type='text' data-id='" + id + "' value='" + value + "' class='form-control pull-right edit' " + others + "/>";
 			return inputHtml;
 		}
 
@@ -165,13 +174,13 @@ function nodeExpand(){
 			return buttonHtml;
 		}
 
-		function getSelectHtml(json_option, selVal) {
+		function getSelectHtml(id, selVal, options) {
 			var selectHtml = '';
 			selectHtml += '<div class="col-sm-5 col-sm-item" style="width:100%;">'
-			selectHtml += '<select class="form-control" style="width:100%;">';
+			selectHtml += '<select data-id="' + id + '"class="form-control" style="width:100%;">';
 			selectHtml += '<option value=""></option>';
 
-			$(json_option).each(function(idx, ele) {
+			$(options).each(function(idx, ele) {
 				var selected = selVal == ele.code ?  "selected" : "";
 				selectHtml += '<option value="' + ele.code + '" ' + selected + '>' + ele.name + '</option>';
 			});
@@ -179,6 +188,55 @@ function nodeExpand(){
 			selectHtml += '</div>';
 
 			return selectHtml;
+		}
+
+		function reCalculate(obj) {
+			var trObj = $(obj).parents("tr");
+			var weight = getItemVal(trObj, "weight");
+			var buy_price = getItemVal(trObj, "buy_price");
+			var sell_price = getItemVal(trObj, "sell_price");
+
+			weight = isNaN(weight) || weight == "" ? "0" : weight;
+			buy_price = isNaN(buy_price) || buy_price == "" ? "0" : buy_price;
+			sell_price = isNaN(sell_price) || sell_price == "" ? "0" : sell_price;
+
+			var tran_price = Math.round(eval(weight) * TRAN_CONS);
+			var cost_price = eval(eval(buy_price) + eval(tran_price)) + "(" + tran_price + ")";
+			var profits = eval(eval(sell_price) - eval(buy_price) - eval(tran_price));
+			//alert(eval(eval(buy_price) + eval(tran_price)) + "(" + tran_price + ")");
+			// trObj.find("td").eq(8).text(tran_price);
+			// trObj.find("td").eq(9).text(cost_price);
+			// trObj.find("td").eq(10).text(profits);
+
+			setItemVal(trObj, "tran_price", tran_price);
+			setItemVal(trObj, "cost_price", cost_price);
+			setItemVal(trObj, "profits", profits);
+		}
+
+		function setItemVal(trObj, data_id, value) {
+			//value = isNaN(value) ? "0" : value;
+			
+			$(trObj).find("*").filter(function(){
+				if ($(this).attr("data-id") == data_id) {
+					$(this).text(value);
+					return false;
+				}
+			});
+		}
+
+		function getItemVal(trObj, data_id) {
+			var value = "";
+			$(trObj).find("*").filter(function(){
+				if ($(this).attr("data-id") == data_id) {
+					if ($(this).is("input") || $(this).is("select")) {
+						value = $(this).val();
+					} else {
+						value = $(this).text();
+					}
+					return false;
+				}
+			});
+			return isNaN(value) ? "0" : value;
 		}
 
 		function deleteGoods(obj) {
@@ -197,16 +255,30 @@ function nodeExpand(){
 			$("#top-tree-table tbody tr").each(function(idx, ele) {
 				var data_row = {};
 				data_row["ID"] = "";
-		
+
 				$(this).find("td").each(function() {
-					var obj = $(this).find("input");
+					var obj = $(this).find("*").filter(function(){
+						if ($(this).attr("data-id") != undefined) {
+							return this;
+						}
+					});
+					
 					var id = $(obj).attr("data-id");
-					var value = $(obj).val();
-					data_row[$(obj).attr("data-id")] = value;
+					var value = "";
+					if ($(obj).is("input") || $(obj).is("select")) {
+						value = $(obj).val();
+					} else {
+						value = $(obj).text();
+					}
+					id = (id == undefined) ? "" : id;
+					value = (value == undefined) ? "" : value;
+
+					data_row[id] = value;
 				});
+
 				goods.push(data_row);
 			});
-		
+
 			var data = {"GOODS" : goods};
 		
 			$.ajax({

@@ -23,6 +23,8 @@ $(function () {
 	pageInit();
 });
 
+var json_option;
+
 function nodeExpand(){
 			this.expander.removeClass("fa-caret-right").addClass("fa-caret-down");
 			if(this.children.length==0){
@@ -102,22 +104,27 @@ function nodeExpand(){
 			var trHtml = "";
 
 			$.ajax({
-				//url: '/top/getdata',
-				url: './data/goods.json',
+				url: '/top/getdata',
 				type: 'get',
 				dataType: 'json',
 				cache: false,
 				processData: false,
 				contentType: false,
-				success: function(goods) {
+				success: function(result) {
+					// alert(JSON.stringify(result));
+
+					var goods = result.goods;
+					json_option = result.groups.GROUP;
+
 					$(goods.GOODS).each(function(idx, ele) {
 						trHtml = "";
 						trHtml += "<tr>";
 						//trHtml += "<td>" + ele.ID + "</td>";
 						trHtml += "<td>" + ele.name + "</td>";
-						// trHtml += "<td></td>";
-						trHtml += "<td>" + ele.buy_price + "</td>";
+						trHtml += "<td>" + getGroupInfo(ele.group, json_option) + "</td>";
+						trHtml += "<td>" + ele.cost_price + "</td>";
 						trHtml += "<td>" + ele.sell_price + "</td>";
+						trHtml += "<td>" + ele.weight + "</td>";
 						trHtml += "<td>" + ele.profits + "</td>";
 						trHtml += "<td>" + ele.leavings + "</td>";
 						trHtml += "</tr>";
@@ -126,4 +133,16 @@ function nodeExpand(){
 					});
 				}
 			})
+		}
+
+		function getGroupInfo(groupVal, options) {
+			var groupInfo = "";
+			$(options).each(function(idx, ele) {
+				if (groupVal == ele.code) {
+					groupInfo = ele.name;
+					return false;
+				}
+			});
+
+			return groupInfo;
 		}
