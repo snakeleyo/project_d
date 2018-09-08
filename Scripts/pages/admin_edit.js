@@ -1,4 +1,4 @@
-$(function () {
+﻿$(function () {
   $("#top-tree-table").treetable({
     expandable: true,
     expanderTemplate: '<a class="fa fa-caret-right" aria-hidden="true"></a>',
@@ -49,7 +49,7 @@ $(function () {
   pageInit();
 });
 
-var TRAN_CONS = 6.2;
+var TRAN_CONS = 62;
 var json_option;
 
 function nodeExpand(){
