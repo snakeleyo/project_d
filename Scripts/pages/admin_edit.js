@@ -38,9 +38,9 @@
 	trHtml += "<td>" + getInputHtml("sell_price", "", "onchange='reCalculate(this)'") + "</td>";
 	trHtml += "<td>" + getInputHtml("leavings", "", "") + "</td>";
 	trHtml += "<td>" + getInputHtml("weight", "", "style:width:75px;min-width:75px; onchange='reCalculate(this);'") + "</td>";
-	trHtml += "<td style='padding-top:15px;'>0<span data-id='tran_price'></span></td>";
-	trHtml += "<td style='padding-top:15px;'>0(0)<span data-id='cost_price'></td>";
-	trHtml += "<td style='padding-top:15px;'>0<span data-id='profits'></td>";
+	trHtml += "<td style='padding-top:15px;'><span data-id='tran_price'>0</span></td>";
+	trHtml += "<td style='padding-top:15px;'><span data-id='cost_price'>0(0)</td>";
+	trHtml += "<td style='padding-top:15px;'><span data-id='profits'>0</td>";
 	trHtml += "</tr>";
 
 	$(trHtml).appendTo("#top-tree-table tbody");
@@ -125,6 +125,27 @@ function nodeExpand(){
 				});
 			}
 		}
+		var sort_key = "";
+
+		var desc = function(x, y) {
+			return (x[sort_key] < y[sort_key]) ? 1 : ((x[sort_key] > y[sort_key]) ? -1 : 0)
+		}
+
+		var asc = function(x, y) {
+			if (x[sort_key] == "" && y[sort_key] == "") {
+				return 0;
+			}
+
+			// if (x[sort_key] == "" && y[sort_key] != "") {
+			// 	return -1;
+			// }
+
+			if (x[sort_key] != "" && y[sort_key] == "") {
+				return -1;
+			}
+
+			return (x[sort_key] > y[sort_key]) ? 1 : ((x[sort_key] < y[sort_key]) ? -1 : 0)
+		}
 
 		function pageInit() {
 			
@@ -140,7 +161,7 @@ function nodeExpand(){
 				success: function(result) {
 					var goods = result.goods;
 					json_option = result.groups.GROUP;
-
+					sort_key = "group";
 					$(goods.GOODS).each(function(idx, ele) {
 						trHtml = "";
 						trHtml += "<tr>";
@@ -215,7 +236,6 @@ function nodeExpand(){
 
 		function setItemVal(trObj, data_id, value) {
 			//value = isNaN(value) ? "0" : value;
-			
 			$(trObj).find("*").filter(function(){
 				if ($(this).attr("data-id") == data_id) {
 					$(this).text(value);
